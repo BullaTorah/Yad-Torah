@@ -1,26 +1,26 @@
 {
-  "generatedAt": "2026-07-09T20:35:41.174Z",
+  "generatedAt": "2026-11-22T19:15:16.929Z",
   "source": "TAHOT Gen-Deu (STEPBible)",
   "totals": {
-    "tokens": 76490,
-    "verses": 5607,
+    "tokens": 79990,
+    "verses": 5853,
     "missingStrongs": 0
   },
   "byBook": {
-    "Genesis": 20161,
-    "Exodus": 15864,
-    "Leviticus": 11539,
-    "Numbers": 15752,
-    "Deuteronomy": 13174
+    "Genesis": 20614,
+    "Exodus": 16713,
+    "Leviticus": 11950,
+    "Numbers": 16413,
+    "Deuteronomy": 14300
   },
   "byTextType": {
-    "L": 76242,
+    "L": 79737,
     "LAH(b)": 3,
     "L(abh)": 17,
     "LA(bh)": 5,
     "X": 9,
-    "Q(k)": 22,
-    "Q(K)": 50,
+    "Q(k)": 24,
+    "Q(K)": 52,
     "LBH(A)": 1,
     "LBH(a)": 4,
     "L(S)": 4,
@@ -32,8 +32,8 @@
     "L(b+p)": 6,
     "L(a+bh)": 1,
     "L(AH+B)": 1,
-    "L(P)": 2,
-    "LAB(h)": 1
+    "LAB(h)": 2,
+    "L(P)": 2
   },
   "samples": {
     "hadavar": [

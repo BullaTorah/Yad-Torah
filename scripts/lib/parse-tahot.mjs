@@ -9,8 +9,9 @@ const BOOK_NAMES = {
   Deu: "Deuteronomy"
 };
 
+// Eng refs may include Heb in parens when they differ, e.g. Gen.32.3(32.4)#01=L
 const DATA_ROW_RE =
-  /^(?<book>[A-Za-z0-9]+)\.(?<chapter>\d+)\.(?<verse>\d+)#(?<word>\d+)=(?<textType>[A-Za-z()+=]+)\t/;
+  /^(?<book>[A-Za-z0-9]+)\.(?<chapter>\d+)\.(?<verse>\d+)(?:\((?<hebChapter>\d+)\.(?<hebVerse>\d+)\))?#(?<word>\d+)=(?<textType>[A-Za-z()+=]+)\t/;
 
 const HEADER = "Eng (Heb) Ref & Type";
 
@@ -21,13 +22,17 @@ export function parseRefField(refField) {
   const book = BOOK_NAMES[match.groups.book];
   if (!book) return null;
 
+  // Prefer Hebrew chapter/verse so keys match Sefaria Tanakh refs.
+  const chapter = match.groups.hebChapter || match.groups.chapter;
+  const verse = match.groups.hebVerse || match.groups.verse;
+
   return {
     book,
-    chapter: Number(match.groups.chapter),
-    verse: Number(match.groups.verse),
+    chapter: Number(chapter),
+    verse: Number(verse),
     wordIndex: Number(match.groups.word),
     textType: match.groups.textType,
-    verseRef: `${book}.${match.groups.chapter}.${match.groups.verse}`
+    verseRef: `${book}.${chapter}.${verse}`
   };
 }
 
