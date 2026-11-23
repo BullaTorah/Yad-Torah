@@ -4,6 +4,7 @@ import {
   isWordLearned,
   toggleWord,
   markWordLearned,
+  removeLearnedWord,
   onWordBankChange,
   onLearnedWordsChange
 } from "../core/word-bank.js";
@@ -267,9 +268,9 @@ function renderKnowThisButton(sense) {
   if (!isAuthConfigured() || !sense.strongs) return "";
 
   const known = isWordLearned(sense.strongs);
-  const label = known ? "Known" : "Mark as Known";
+  const label = known ? "Mark as Unknown" : "Mark as Known";
 
-  return `<button type="button" class="popup-know-btn${known ? " known" : ""}" data-action="know-word"${known ? " disabled" : ""} aria-pressed="${known ? "true" : "false"}">${label}</button>`;
+  return `<button type="button" class="popup-know-btn${known ? " known" : ""}" data-action="know-word" aria-pressed="${known ? "true" : "false"}">${label}</button>`;
 }
 
 function isExplainViewActive() {
@@ -649,17 +650,21 @@ function bindKnowThisButton(popup, word, senses, activeIndex, anchor) {
     }
 
     const sense = senses[activeIndex];
-    if (!sense?.strongs || isWordLearned(sense.strongs)) return;
+    if (!sense?.strongs) return;
 
     btn.disabled = true;
 
     try {
-      await markWordLearned({
-        strongs: sense.strongs,
-        lemma: sense.lemma,
-        gloss: sense.gloss,
-        surfaceExample: word
-      });
+      if (isWordLearned(sense.strongs)) {
+        await removeLearnedWord(sense.strongs);
+      } else {
+        await markWordLearned({
+          strongs: sense.strongs,
+          lemma: sense.lemma,
+          gloss: sense.gloss,
+          surfaceExample: word
+        });
+      }
       rebindPopup(popup, word, senses, activeIndex, anchor);
     } catch {
       btn.disabled = false;

@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parseDStrongs } from "../scripts/lib/parse-dstrongs.mjs";
-import { parseTahotLine } from "../scripts/lib/parse-tahot.mjs";
+import { parseRefField, parseTahotLine } from "../scripts/lib/parse-tahot.mjs";
 import { displaySurface } from "../scripts/lib/normalize-hebrew.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -36,6 +36,39 @@ test("parseTahotLine parses Gen.1.1 first word", () => {
   assert.equal(token.wordIndex, 1);
   assert.equal(token.strongs, "7225");
   assert.equal(token.surface, displaySurface("בְּ/רֵאשִׁ֖ית"));
+});
+
+test("parseRefField prefers Hebrew when Eng/Heb diverge", () => {
+  const ref = parseRefField(
+    "Gen.32.3(32.4)#01=L\tוַ/יִּשְׁלַ֨ח\tva/i.yish.Lach\tand/ he sent\tH9001/{H7971G}\tHc/Vqw3ms"
+  );
+  assert.equal(ref.verseRef, "Genesis.32.4");
+  assert.equal(ref.chapter, 32);
+  assert.equal(ref.verse, 4);
+});
+
+test("parseRefField keeps Eng when Heb matches (no parens)", () => {
+  const ref = parseRefField(
+    "Gen.1.1#01=L\tבְּ/רֵאשִׁ֖ית\tbe./re.Shit\tin/ beginning\tH9003/{H7225G}\tHR/Ncfsa"
+  );
+  assert.equal(ref.verseRef, "Genesis.1.1");
+});
+
+test("built books include former Eng/Heb gap chapters", async () => {
+  const checks = [
+    ["genesis.json", "Genesis.32.4", "7971"],
+    ["exodus.json", "Exodus.8.1", null],
+    ["leviticus.json", "Leviticus.6.1", null],
+    ["numbers.json", "Numbers.17.1", null],
+    ["deuteronomy.json", "Deuteronomy.13.1", null]
+  ];
+
+  for (const [file, ref, strongs] of checks) {
+    const book = await loadJson(`books/${file}`);
+    const tokens = book[ref];
+    assert.ok(tokens?.length, `missing ${ref} in ${file}`);
+    if (strongs) assert.equal(tokens[0].strongs, strongs);
+  }
 });
 
 test("הַדָּבָר maps to H1697 in TAHOT (Deuteronomy 4:2)", async () => {

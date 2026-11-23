@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build:tahot": "node scripts/build-tahot.mjs",
+    "verify:tahot": "node scripts/verify-tahot-coverage.mjs",
     "test:tahot": "node --test tests/lookup-tahot.test.mjs",
     "test:lexicon": "node --test tests/lexicon-phase2.test.mjs",
     "test": "node --test tests/*.test.mjs"

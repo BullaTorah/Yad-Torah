@@ -121,7 +121,6 @@ let loadInFlight = null;
 let currentAliyotCount = MAX_ALIYAH_TABS;
 let aliyahTabAnimTimers = [];
 let sessionAliyahOverride = null;
-let dailyVocabOfferedThisSession = false;
 let fullVerses = [];
 let currentTitle = "";
 let readingMode = "aliyah";
@@ -176,7 +175,6 @@ async function openPracticeFromHome() {
     showWordBankPanel();
     return;
   }
-  dailyVocabOfferedThisSession = true;
   showDailyVocabLoading();
   try {
     const practice = await loadDailyVocabPractice();
@@ -437,10 +435,6 @@ async function loadReadingInner() {
       scheduleDifficultyProgressEntrance({ delayMs: entranceEndMs });
     }
     markReadingReady(true);
-
-    if (!isHomeOpen()) {
-      maybeOfferDailyVocab();
-    }
   } catch (err) {
     if (loadId !== readingLoadGeneration) return;
     markReadingReady(false);
@@ -448,31 +442,6 @@ async function loadReadingInner() {
       err.message || "Something went wrong while loading today's reading.",
       loadReading
     );
-  }
-}
-
-async function maybeOfferDailyVocab() {
-  if (isHomeOpen()) return;
-  if (dailyVocabOfferedThisSession) return;
-  if (!isLoggedIn() || !shouldOfferDailyVocab()) return;
-
-  dailyVocabOfferedThisSession = true;
-  showDailyVocabLoading();
-
-  try {
-    const practice = await loadDailyVocabPractice();
-
-    if (!practice?.items?.length) {
-      hideDailyVocabOverlay();
-      return;
-    }
-
-    showDailyVocabOverlay(practice);
-  } catch {
-    showDailyVocabError(() => {
-      dailyVocabOfferedThisSession = false;
-      void maybeOfferDailyVocab();
-    });
   }
 }
 
@@ -642,9 +611,6 @@ async function bootstrap() {
   onAuthStateChange((session, event) => {
     if (event && event !== "SIGNED_IN" && event !== "SIGNED_OUT") {
       return;
-    }
-    if (event === "SIGNED_IN") {
-      dailyVocabOfferedThisSession = false;
     }
     if (event === "SIGNED_OUT") {
       hideDailyVocabOverlay();

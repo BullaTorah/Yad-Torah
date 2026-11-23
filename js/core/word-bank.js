@@ -138,21 +138,22 @@ export function clearWordBank() {
 export async function removeLearnedWord(strongsOrId) {
   const id = normalizeStrongs(strongsOrId);
   if (!id || !isLoggedIn()) return false;
-  if (!learnedIds.has(id)) return false;
+  if (!isWordLearned(id)) return false;
 
   const supabase = getSupabase();
   const user = getUser();
   if (!supabase || !user) return false;
 
+  const keys = strongsLookupKeys(id);
   const { error } = await supabase
     .from("learned_words")
     .delete()
     .eq("user_id", user.id)
-    .eq("strongs", id);
+    .in("strongs", keys);
 
   if (error) throw error;
 
-  learnedIds.delete(id);
+  keys.forEach((key) => learnedIds.delete(key));
   learnedLoaded = true;
   notifyLearnedListeners();
   return true;

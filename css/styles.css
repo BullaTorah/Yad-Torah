@@ -121,6 +121,12 @@ html[data-hebrew-font="traditional"] {
   --hebrew-font-weight: 500;
 }
 
+/* Kill horizontal rubber-band / side-wiggle from 100vw full-bleeds on mobile */
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   --english-font: "Jost", sans-serif;
   --torah-english-font: "Lora", serif;
@@ -408,12 +414,7 @@ h1 {
 
 .popup-know-btn.known {
   color: var(--english-color);
-  cursor: default;
   opacity: 1;
-}
-
-.popup-know-btn.known::after {
-  display: none;
 }
 
 .home-cta:disabled,
@@ -1215,6 +1216,9 @@ body.home-open #difficultyProgress {
     max-width: 100%;
     padding-left: var(--body-pad-left);
     padding-right: var(--body-pad-right);
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
   }
 
   #topBar .text-column {
@@ -1260,9 +1264,9 @@ body.home-open #difficultyProgress {
     order: unset;
     justify-content: center;
     width: 100%;
-    box-sizing: content-box;
-    padding: 24px 36px;
-    margin: -24px -36px 10px;
+    box-sizing: border-box;
+    padding: 24px 0 0;
+    margin: 0 0 10px;
     font-size: clamp(14px, 3.8vw, 18px);
     line-height: 1.2;
     transform: none;
@@ -1413,9 +1417,9 @@ html.mobile-preview .verse-num {
   grid-row: unset;
   justify-content: center;
   width: 100%;
-  box-sizing: content-box;
-  padding: 24px 36px;
-  margin: -24px -36px 10px;
+  box-sizing: border-box;
+  padding: 24px 0 0;
+  margin: 0 0 10px;
   font-size: 16px;
   line-height: 1.2;
   transform: none;
@@ -3118,8 +3122,11 @@ body:has(#readingFeedback:not([hidden]):not(.is-gone)) {
   width: 100vw;
   max-width: none;
   justify-self: stretch;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  /* Break out of text column without fighting slide transform */
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-right: 0;
   background: #fff;
   color: var(--text-color);
   box-sizing: border-box;
