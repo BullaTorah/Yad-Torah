@@ -83,6 +83,43 @@ function bindHebrewFontSelect(select) {
   select.addEventListener("change", () => applyHebrewFont(select.value));
 }
 
+function closeThemeMenus(exceptMenu = null) {
+  document.querySelectorAll(".theme-menu.theme-control-mobile").forEach((menu) => {
+    if (menu === exceptMenu) return;
+    const toggle = menu.querySelector(".theme-menu-toggle");
+    const panel = menu.querySelector(".theme-menu-panel");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    if (panel) panel.hidden = true;
+    menu.classList.remove("is-open");
+  });
+}
+
+function bindThemeMenus() {
+  document.querySelectorAll(".theme-menu.theme-control-mobile").forEach((menu) => {
+    const toggle = menu.querySelector(".theme-menu-toggle");
+    const panel = menu.querySelector(".theme-menu-panel");
+    if (!toggle || !panel) return;
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = toggle.getAttribute("aria-expanded") === "true";
+      closeThemeMenus(open ? null : menu);
+      if (!open) {
+        toggle.setAttribute("aria-expanded", "true");
+        panel.hidden = false;
+        menu.classList.add("is-open");
+      }
+    });
+
+    panel.addEventListener("click", (e) => e.stopPropagation());
+  });
+
+  document.addEventListener("click", () => closeThemeMenus());
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeThemeMenus();
+  });
+}
+
 export function initTheme() {
   applyTheme(getTheme());
   applyHebrewFont(getHebrewFont());
@@ -92,4 +129,5 @@ export function initTheme() {
   for (const id of HEBREW_FONT_SELECT_IDS) {
     bindHebrewFontSelect(document.getElementById(id));
   }
+  bindThemeMenus();
 }

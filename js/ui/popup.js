@@ -104,8 +104,9 @@ export function hidePopup() {
   popup.style.bottom = "";
   popup.style.width = "";
   popup.style.maxWidth = "";
+  popup.style.maxHeight = "";
   popup.style.transform = "";
-  popup.classList.remove("is-on-white", "is-explain-open");
+  popup.classList.remove("is-on-white", "is-explain-open", "is-docked-top");
   if (activeAnchor) {
     activeAnchor.classList.remove("popup-active", "is-on-white");
   }
@@ -184,15 +185,57 @@ function getColumnBounds() {
   return sample?.getBoundingClientRect() || null;
 }
 
-function positionDockedPopup(popup) {
-  const rect = getColumnBounds();
+/**
+ * Visible viewport for docked popups (not full page height).
+ * In ?preview=mobile, use the on-screen slice of the phone frame.
+ */
+function getDockFrame() {
+  if (document.documentElement.classList.contains("mobile-preview")) {
+    const body = document.body.getBoundingClientRect();
+    const top = Math.max(body.top, 0);
+    const bottom = Math.min(body.bottom, window.innerHeight);
+    const height = Math.max(1, bottom - top);
+    return {
+      top,
+      height,
+      topInset: top,
+      bottomInset: Math.max(0, window.innerHeight - bottom)
+    };
+  }
+  return {
+    top: 0,
+    height: window.innerHeight,
+    topInset: 0,
+    bottomInset: 0
+  };
+}
 
-  popup.style.top = "auto";
-  popup.style.bottom = "0";
+function positionDockedPopup(popup, anchor = activeAnchor) {
+  const rect = getColumnBounds();
+  const frame = getDockFrame();
+  const anchorRect = anchor?.getBoundingClientRect?.();
+  // Bottom third of the visible viewport — not page position
+  const wordY = anchorRect
+    ? (anchorRect.top + anchorRect.bottom) / 2
+    : 0;
+  const dockTop = Boolean(
+    anchorRect && wordY >= frame.top + frame.height * (2 / 3)
+  );
+
+  popup.classList.toggle("is-docked-top", dockTop);
   popup.style.right = "auto";
   popup.style.transform = "";
   popup.style.maxWidth = "none";
   popup.style.boxSizing = "border-box";
+  popup.style.maxHeight = `${Math.min(frame.height * 0.78, frame.height - 24)}px`;
+
+  if (dockTop) {
+    popup.style.top = `${frame.topInset}px`;
+    popup.style.bottom = "auto";
+  } else {
+    popup.style.top = "auto";
+    popup.style.bottom = `${frame.bottomInset}px`;
+  }
 
   if (rect?.width) {
     popup.style.left = `${rect.left}px`;
@@ -205,16 +248,16 @@ function positionDockedPopup(popup) {
   popup.style.transform = "translateX(-50%)";
 }
 
-function scheduleDockedPosition(popup) {
-  positionDockedPopup(popup);
-  requestAnimationFrame(() => positionDockedPopup(popup));
+function scheduleDockedPosition(popup, anchor) {
+  positionDockedPopup(popup, anchor);
+  requestAnimationFrame(() => positionDockedPopup(popup, anchor));
 }
 
 function positionPopup(popup, anchor) {
   popup.style.display = "block";
 
   if (isDockedPopup()) {
-    scheduleDockedPosition(popup);
+    scheduleDockedPosition(popup, anchor);
     return;
   }
 

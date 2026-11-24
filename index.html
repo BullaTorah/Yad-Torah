@@ -25,14 +25,17 @@
 <div id="homeOverlay" class="home-overlay" role="dialog" aria-labelledby="homeHeadline" aria-modal="true">
   <div class="home-overlay-chrome text-column">
     <div class="theme-menu theme-control-mobile">
-      <label class="theme-control">
-        <span class="theme-control-label">Theme</span>
-        <select id="themeSelectHome" class="theme-select" aria-label="Choose color theme"></select>
-      </label>
-      <label class="theme-control">
-        <span class="theme-control-label">Hebrew</span>
-        <select id="hebrewFontSelectHome" class="theme-select" aria-label="Choose Hebrew font"></select>
-      </label>
+      <button type="button" class="theme-menu-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="themeMenuPanelHome">Theme</button>
+      <div id="themeMenuPanelHome" class="theme-menu-panel" hidden role="group" aria-label="Appearance">
+        <label class="theme-control">
+          <span class="theme-control-label">Color</span>
+          <select id="themeSelectHome" class="theme-select" aria-label="Choose color theme"></select>
+        </label>
+        <label class="theme-control">
+          <span class="theme-control-label">Hebrew</span>
+          <select id="hebrewFontSelectHome" class="theme-select" aria-label="Choose Hebrew font"></select>
+        </label>
+      </div>
     </div>
     <div class="home-overlay-chrome-end">
       <button type="button" id="homeWalkthroughBtn" class="home-walkthrough-btn" hidden>How it works</button>
@@ -51,7 +54,7 @@
   </div>
   <div class="home-overlay-main">
     <div class="site-logo home-logo">YAD TORAH</div>
-    <h1 id="homeHeadline" class="home-headline">You can read the Torah.</h1>
+    <h1 id="homeHeadline" class="home-headline">You can read<br class="home-headline-break" />the Torah.</h1>
     <p class="home-lead">Start with a few verses a day. Feel more and more comfortable. <span class="home-lead-last">Track your progress.</span></p>
     <p id="homeStreak" class="home-streak" hidden></p>
     <div id="homeProgress" class="home-progress torah-progress" hidden>
@@ -87,14 +90,17 @@
       <button type="button" id="siteLogo" class="site-logo" aria-label="Home">YAD TORAH</button>
       <div class="header-chrome-end">
         <div class="theme-menu theme-control-mobile">
-          <label class="theme-control">
-            <span class="theme-control-label">Theme</span>
-            <select id="themeSelectHeader" class="theme-select" aria-label="Choose color theme"></select>
-          </label>
-          <label class="theme-control">
-            <span class="theme-control-label">Hebrew</span>
-            <select id="hebrewFontSelectHeader" class="theme-select" aria-label="Choose Hebrew font"></select>
-          </label>
+          <button type="button" class="theme-menu-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="themeMenuPanelHeader">Theme</button>
+          <div id="themeMenuPanelHeader" class="theme-menu-panel" hidden role="group" aria-label="Appearance">
+            <label class="theme-control">
+              <span class="theme-control-label">Color</span>
+              <select id="themeSelectHeader" class="theme-select" aria-label="Choose color theme"></select>
+            </label>
+            <label class="theme-control">
+              <span class="theme-control-label">Hebrew</span>
+              <select id="hebrewFontSelectHeader" class="theme-select" aria-label="Choose Hebrew font"></select>
+            </label>
+          </div>
         </div>
         <div id="authBar" hidden>
           <button type="button" id="authSignInBtn" class="auth-text-btn">Sign in</button>
