@@ -14,6 +14,7 @@ import { clearLearnedWords } from "../core/word-bank.js";
 
 let authConfigured = false;
 let onOpenWordBank = null;
+let onOpenReadingMap = null;
 let authMode = "signin";
 let pendingAfterAuth = null;
 
@@ -44,6 +45,7 @@ function getElements() {
     signInTab: document.getElementById("authSignInTab"),
     signUpTab: document.getElementById("authSignUpTab"),
     message: document.getElementById("authMessage"),
+    progressMenuBtn: document.getElementById("authProgressBtn"),
     wordBankMenuBtn: document.getElementById("authWordBankBtn"),
     clearKnownBtn: document.getElementById("authClearKnownBtn"),
     signOutBtn: document.getElementById("authSignOutBtn")
@@ -269,6 +271,7 @@ function updateAuthUI() {
 
 export function initAuthPanel(options = {}) {
   onOpenWordBank = options.onOpenWordBank || null;
+  onOpenReadingMap = options.onOpenReadingMap || null;
   authConfigured = isAuthConfigured();
 
   const {
@@ -287,6 +290,7 @@ export function initAuthPanel(options = {}) {
     newPasswordInput,
     confirmPasswordInput,
     submitBtn,
+    progressMenuBtn,
     wordBankMenuBtn,
     clearKnownBtn,
     signOutBtn
@@ -400,6 +404,11 @@ export function initAuthPanel(options = {}) {
     } finally {
       if (submitBtn) submitBtn.disabled = false;
     }
+  });
+
+  progressMenuBtn?.addEventListener("click", () => {
+    closeMenu();
+    onOpenReadingMap?.();
   });
 
   wordBankMenuBtn?.addEventListener("click", () => {

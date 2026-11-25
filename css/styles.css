@@ -1641,21 +1641,24 @@ html.mobile-preview .popup-explain-he {
 }
 
 .auth-modal,
-.word-bank-panel {
+.word-bank-panel,
+.reading-map-panel {
   position: fixed;
   inset: 0;
   z-index: 10000;
 }
 
 .auth-modal-backdrop,
-.word-bank-backdrop {
+.word-bank-backdrop,
+.reading-map-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
 }
 
 .auth-modal-card,
-.word-bank-card {
+.word-bank-card,
+.reading-map-card {
   position: relative;
   margin: max(48px, env(safe-area-inset-top)) auto 24px;
   width: min(420px, calc(100vw - 32px));
@@ -1761,7 +1764,8 @@ html.mobile-preview .popup-explain-he {
 }
 
 .auth-modal-close,
-.word-bank-close {
+.word-bank-close,
+.reading-map-close {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -1878,6 +1882,436 @@ html.mobile-preview .popup-explain-he {
 .word-bank-guest button {
   display: inline-block;
   margin-top: 12px;
+}
+
+.reading-map-guest {
+  margin: 0;
+  padding: 0 24px 24px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--surface-muted, #444);
+}
+
+.reading-map-guest button {
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.reading-map-card {
+  position: relative;
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
+  width: min(440px, calc(100vw - 32px));
+  padding: 44px 0 0;
+}
+
+.reading-map-confirm {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.reading-map-confirm[hidden] {
+  display: none !important;
+}
+
+.reading-map-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.reading-map-confirm-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: min(100%, 220px);
+  padding: 20px 22px;
+  background: var(--surface-bg);
+  color: var(--surface-fg);
+  box-sizing: border-box;
+}
+
+.reading-map-confirm-label {
+  margin: 0 0 8px;
+  font-family: var(--english-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--surface-muted, #666);
+}
+
+.reading-map-confirm-open {
+  text-align: left;
+  padding-top: 2px;
+  padding-bottom: 12px;
+}
+
+.reading-map-confirm-open::after {
+  top: calc(1em + 6px);
+}
+
+.reading-map-confirm-open:hover::after,
+.reading-map-confirm-open:focus-visible::after {
+  top: calc(1em + 9px);
+}
+
+.reading-map-confirm-cancel {
+  margin: 0;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: var(--english-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--surface-muted, #666);
+  cursor: pointer;
+}
+
+html[data-theme="night-study"] .reading-map-confirm-label,
+html[data-theme="night-study"] .reading-map-confirm-cancel {
+  color: #c4a574;
+}
+
+.reading-map-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 0 24px;
+}
+
+.reading-map-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-family: var(--english-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--surface-fg);
+}
+
+.reading-map-bar-meta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--surface-muted, #666);
+}
+
+.reading-map-bar-track {
+  height: 12px;
+  background: var(--learn-wash);
+  overflow: hidden;
+}
+
+.reading-map-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--english-color);
+  transition: width 0.55s ease-out;
+}
+
+.reading-map-heat-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  min-height: 28px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.reading-map-book-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--english-font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--surface-fg);
+  pointer-events: none;
+}
+
+.reading-map-book-title[hidden] {
+  display: none !important;
+}
+
+html[data-theme="night-study"] .reading-map-book-title {
+  color: #e6d4a0;
+}
+
+.reading-map-back-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.reading-map-back-btn::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translate(-35%, -50%) rotate(45deg);
+  box-sizing: border-box;
+}
+
+.reading-map-back-btn[hidden] {
+  display: none !important;
+}
+
+.reading-map-heat {
+  display: grid;
+  gap: 0;
+}
+
+.reading-map-heat-books,
+.reading-map-heat-parashot {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.reading-map-heat-aliyot {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.reading-map-book-bar {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.reading-map-book-bar:hover .reading-map-book-bar-track,
+.reading-map-book-bar:focus-visible .reading-map-book-bar-track {
+  background: color-mix(in srgb, var(--english-color) 14%, var(--learn-wash));
+}
+
+.reading-map-book-bar:hover .reading-map-book-bar-fill,
+.reading-map-book-bar:focus-visible .reading-map-book-bar-fill {
+  filter: brightness(1.12);
+}
+
+.reading-map-book-bar:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.reading-map-book-bar-track {
+  height: 2.75rem;
+  background: var(--learn-wash);
+  overflow: hidden;
+  transition: background-color 0.15s ease;
+}
+
+.reading-map-book-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--english-color);
+  transition: opacity 0.55s ease-out, filter 0.15s ease;
+}
+
+.reading-map-book-bar-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 12px 0 14px;
+  box-sizing: border-box;
+  font-family: var(--english-font);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.reading-map-book-bar-label .reading-map-bar-meta {
+  font-size: 13px;
+  font-weight: 600;
+  color: inherit;
+  opacity: 0.75;
+}
+
+.reading-map-parasha-row {
+  position: relative;
+}
+
+.reading-map-parasha-name {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8px 0 14px;
+  box-sizing: border-box;
+  font-family: var(--english-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: left;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.reading-map-aliyah-cols {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+}
+
+.reading-map-aliyah-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 2px 8px;
+  font-family: var(--english-font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--surface-muted, #666);
+}
+
+.reading-map-aliyah-cols.is-spacer .reading-map-aliyah-col {
+  visibility: hidden;
+}
+
+.reading-map-parasha-chunks {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+}
+
+.reading-map-aliyah-chunk {
+  display: block;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  background: var(--learn-wash);
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+.reading-map-aliyah-chunk:hover,
+.reading-map-aliyah-chunk:focus-visible {
+  filter: brightness(1.06);
+  outline: none;
+}
+
+.reading-map-aliyah-chunk:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  z-index: 1;
+}
+
+.reading-map-aliyah-chunk.is-read {
+  background: var(--english-color);
+}
+
+html[data-theme="night-study"] .reading-map-book-bar-label,
+html[data-theme="night-study"] .reading-map-parasha-name {
+  color: #e6d4a0;
+}
+
+html[data-theme="night-study"] .reading-map-book-bar:hover .reading-map-book-bar-track,
+html[data-theme="night-study"] .reading-map-book-bar:focus-visible .reading-map-book-bar-track {
+  background: color-mix(in srgb, var(--english-color) 22%, var(--learn-wash));
+}
+
+html[data-theme="night-study"] .reading-map-aliyah-col {
+  color: #c4a574;
+}
+
+html[data-theme="night-study"] .reading-map-aliyah-chunk:hover,
+html[data-theme="night-study"] .reading-map-aliyah-chunk:focus-visible {
+  filter: brightness(1.18);
+}
+
+.reading-map-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border: none;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  font-family: var(--english-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+button.reading-map-cell {
+  cursor: pointer;
+  width: 100%;
+}
+
+button.reading-map-cell:hover,
+button.reading-map-cell:focus-visible {
+  filter: brightness(1.08);
+  outline: none;
+}
+
+button.reading-map-cell:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.reading-map-book .reading-map-cell-label,
+.reading-map-parasha .reading-map-cell-label {
+  font-size: 15px;
+}
+
+.reading-map-aliyah {
+  min-height: 2.6rem;
+  padding: 8px 4px;
+  font-size: 14px;
+}
+
+html[data-theme="night-study"] .reading-map-bar-label {
+  color: #e6d4a0;
+}
+
+html[data-theme="night-study"] .reading-map-bar-meta {
+  color: #c4a574;
+}
+
+html[data-theme="night-study"] button.reading-map-cell:hover,
+html[data-theme="night-study"] button.reading-map-cell:focus-visible {
+  filter: brightness(1.18);
 }
 
 .popup-save-btn,
@@ -3073,7 +3507,7 @@ html[data-theme="night-study"] .home-progress .torah-progress-meta {
 }
 
 .home-progress.torah-progress {
-  margin-bottom: 2.75rem;
+  margin-bottom: 1.75rem;
 }
 
 .reading-feedback-progress.torah-progress {
@@ -3082,16 +3516,13 @@ html[data-theme="night-study"] .home-progress .torah-progress-meta {
 
 .home-actions {
   display: grid;
-  /* Equal halves so Practice starts at 50% — same as the Reader section on the bar */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 0;
   row-gap: 24px;
   align-items: start;
+  width: 100%;
+  max-width: 36rem;
   margin-top: 1.5rem;
-}
-
-.home-actions-reading {
-  padding-right: 40px;
   box-sizing: border-box;
 }
 
@@ -3099,12 +3530,13 @@ html[data-theme="night-study"] .home-progress .torah-progress-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
+  width: 100%;
 }
 
 .home-actions-label {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   font-family: var(--english-font);
   font-size: 12px;
   font-weight: 700;
@@ -3113,8 +3545,19 @@ html[data-theme="night-study"] .home-progress .torah-progress-meta {
   color: var(--english-color);
 }
 
-.home-cta {
+.home-actions .home-cta {
   text-align: left;
+  padding-top: 2px;
+  padding-bottom: 12px;
+}
+
+.home-actions .home-cta::after {
+  top: calc(1em + 6px);
+}
+
+.home-actions .home-cta:hover::after,
+.home-actions .home-cta:focus-visible::after {
+  top: calc(1em + 9px);
 }
 
 .home-cta-tertiary {
@@ -3134,11 +3577,7 @@ html[data-theme="night-study"] .home-progress .torah-progress-meta {
 @media (max-width: 520px) {
   .home-actions {
     grid-template-columns: 1fr;
-    gap: 28px;
-  }
-
-  .home-actions-reading {
-    padding-right: 0;
+    gap: 20px;
   }
 }
 
@@ -3857,10 +4296,10 @@ body.home-open .continue-portion-btn {
   display: inline-block;
 }
 
-/* Theme preview dock (desktop) */
+/* Theme preview dock (desktop) — below modals (auth / summary / word bank) */
 .theme-dock {
   position: fixed;
-  z-index: 11000;
+  z-index: 9500;
   left: 0;
   bottom: 0;
   display: flex;

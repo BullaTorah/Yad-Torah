@@ -45,6 +45,7 @@
           <span id="homeProfileName"></span>
         </button>
         <div id="homeAuthMenu" class="auth-menu" hidden role="menu">
+          <button type="button" id="homeProgressBtn" role="menuitem">Summary</button>
           <button type="button" id="homeWordBankBtn" role="menuitem">Practice words</button>
           <button type="button" id="homeClearKnownBtn" role="menuitem">Clear Known words</button>
           <button type="button" id="homeSignOutBtn" role="menuitem">Sign out</button>
@@ -54,7 +55,7 @@
   </div>
   <div class="home-overlay-main">
     <div class="site-logo home-logo">YAD TORAH</div>
-    <h1 id="homeHeadline" class="home-headline">You can read<br class="home-headline-break" />the Torah.</h1>
+    <h1 id="homeHeadline" class="home-headline">You can read <br class="home-headline-break" />the Torah.</h1>
     <p class="home-lead">Start with a few verses a day. Feel more and more comfortable. <span class="home-lead-last">Track your progress.</span></p>
     <p id="homeStreak" class="home-streak" hidden></p>
     <div id="homeProgress" class="home-progress torah-progress" hidden>
@@ -78,6 +79,10 @@
         <button type="button" id="homeWeeklyFlashBtn" class="home-cta home-cta-weekly">First 10 words</button>
         <button type="button" id="homePracticeBtn" class="home-cta home-cta-tertiary">Practice words</button>
         <button type="button" id="homeStoryBtn" class="home-cta home-cta-story" hidden>Practice story</button>
+      </div>
+      <div class="home-actions-col home-actions-info">
+        <p class="home-actions-label">Info</p>
+        <button type="button" id="homeSummaryBtn" class="home-cta home-cta-summary">Summary</button>
       </div>
     </div>
     <p id="homeLoadingHint" class="home-loading-hint" hidden>Loading today’s reading…</p>
@@ -108,6 +113,7 @@
             <span id="authProfileName"></span>
           </button>
           <div id="authMenu" class="auth-menu" hidden role="menu">
+            <button type="button" id="authProgressBtn" role="menuitem">Summary</button>
             <button type="button" id="authWordBankBtn" role="menuitem">Practice words</button>
             <button type="button" id="authClearKnownBtn" role="menuitem">Clear Known words</button>
             <button type="button" id="authSignOutBtn" role="menuitem">Sign out</button>
@@ -141,7 +147,7 @@
       <div id="difficultyProgressFill" class="difficulty-progress-fill"></div>
     </div>
     <div class="difficulty-progress-meta">
-      <span>Words I know:</span>
+      <span>Words you know:</span>
       <span id="difficultyProgressMeta"></span>
     </div>
   </div>
@@ -243,6 +249,33 @@
     </p>
     <p id="wordBankEmpty" class="word-bank-empty" hidden>No Practice words yet. Tap a word while reading and choose “Add to Practice words”.</p>
     <ul id="wordBankList" class="word-bank-list"></ul>
+  </div>
+</div>
+
+<div id="readingMapPanel" class="reading-map-panel" hidden>
+  <div class="reading-map-backdrop" data-reading-map-close></div>
+  <div class="reading-map-card" role="dialog" aria-label="Summary">
+    <button type="button" class="reading-map-close" data-reading-map-close aria-label="Close">×</button>
+    <p id="readingMapGuest" class="reading-map-guest" hidden>
+      Sign in to track the Torah you’ve opened.
+      <button type="button" id="readingMapSignInBtn">Sign in</button>
+    </p>
+    <div id="readingMapBody" class="reading-map-body">
+      <div id="readingMapBars" class="reading-map-bars" aria-label="Reading totals"></div>
+      <div class="reading-map-heat-head">
+        <button type="button" id="readingMapBackBtn" class="reading-map-back-btn" hidden aria-label="Back"></button>
+        <span id="readingMapBookTitle" class="reading-map-book-title" hidden></span>
+      </div>
+      <div id="readingMapHeat" class="reading-map-heat reading-map-heat-books" aria-label="Reading map"></div>
+    </div>
+    <div id="readingMapConfirm" class="reading-map-confirm" hidden>
+      <div class="reading-map-confirm-backdrop" data-reading-map-confirm-cancel></div>
+      <div class="reading-map-confirm-card" role="dialog" aria-labelledby="readingMapConfirmLabel">
+        <p id="readingMapConfirmLabel" class="reading-map-confirm-label"></p>
+        <button type="button" id="readingMapConfirmOpen" class="home-cta reading-map-confirm-open">Open</button>
+        <button type="button" class="reading-map-confirm-cancel" data-reading-map-confirm-cancel>Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 

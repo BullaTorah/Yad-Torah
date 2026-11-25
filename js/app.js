@@ -38,6 +38,11 @@ import {
   seedKnownWordsForLevel,
   countLearnedWords
 } from "./core/word-bank.js";
+import {
+  loadReadingMap,
+  clearReadingMapCache,
+  recordReadingOpen
+} from "./core/reading-map.js";
 import { getTahotRankedFrequency } from "./core/lookup-tahot.js";
 import {
   loadDailyVocabPractice,
@@ -64,6 +69,11 @@ import {
   showWordBankPanel,
   refreshWordBankPanel
 } from "./ui/word-bank-panel.js";
+import {
+  initReadingMapOverlay,
+  showReadingMapOverlay,
+  hideReadingMapOverlay
+} from "./ui/reading-map-overlay.js";
 import {
   initDailyVocabOverlay,
   showDailyVocabLoading,
@@ -123,6 +133,12 @@ let aliyahTabAnimTimers = [];
 let sessionAliyahOverride = null;
 let fullVerses = [];
 let currentTitle = "";
+let currentAliyahRef = "";
+let currentParshaTitle = "";
+let currentAliyahNumber = 1;
+/** When set, loadReading uses this parasha's aliyot instead of today's calendar. */
+let customParashaAliyot = null;
+let customParashaTitle = null;
 let readingMode = "aliyah";
 let readingReady = false;
 let readingReadyResolvers = [];
@@ -145,13 +161,24 @@ function waitUntilReadingReady() {
   });
 }
 
-function applyDisplayedVerses({ animate = false, animateDelay = 0 } = {}) {
+function applyDisplayedVerses({
+  animate = false,
+  animateDelay = 0,
+  trackOpen = !isHomeOpen()
+} = {}) {
   if (!fullVerses.length) return { entranceEndMs: 0 };
   const verses =
     readingMode === "three" ? fullVerses.slice(0, 3) : fullVerses;
   setRenderState({ title: currentTitle, verses });
   const result = render(currentTitle, verses, { animate, animateDelay });
   resetReadingFeedback();
+  if (trackOpen) {
+    void recordReadingOpen({
+      verseRefs: verses.map((v) => v.ref).filter(Boolean),
+      parshaTitle: currentParshaTitle,
+      aliyahNumber: currentAliyahNumber
+    });
+  }
   return result || { entranceEndMs: 0 };
 }
 
@@ -160,10 +187,40 @@ async function revealReading(mode) {
   const aliyahMs = setAliyahTabsUI(getActiveAliyahNumber(), { animate: true });
   const { entranceEndMs } = applyDisplayedVerses({
     animate: true,
-    animateDelay: aliyahMs + 120
+    animateDelay: aliyahMs + 120,
+    trackOpen: true
   });
   scheduleDifficultyProgressEntrance({ delayMs: entranceEndMs });
   hidePopup();
+}
+
+async function openAliyahFromProgress({
+  parashaName,
+  aliyahNumber,
+  aliyahRefs
+}) {
+  customParashaAliyot = Array.isArray(aliyahRefs)
+    ? aliyahRefs.slice(0, 7)
+    : null;
+  customParashaTitle = parashaName || null;
+  sessionAliyahOverride = Math.min(
+    7,
+    Math.max(1, Number(aliyahNumber) || 1)
+  );
+
+  await loadReading();
+  readingMode = "aliyah";
+
+  if (isHomeOpen()) {
+    await startReadingFromHome("aliyah");
+  } else {
+    hidePopup();
+  }
+}
+
+function clearCustomParasha() {
+  customParashaAliyot = null;
+  customParashaTitle = null;
 }
 
 async function openPracticeFromHome() {
@@ -376,18 +433,31 @@ async function loadReadingInner() {
     });
     initRender();
 
-    const calendar = await fetchCalendar(isDiaspora);
-    const parsha = findParshaItem(calendar);
+    let aliyot;
+    let title;
 
-    if (!parsha?.extraDetails?.aliyot?.length) {
-      throw new Error("No weekly Torah portion found for today.");
+    if (customParashaAliyot?.length) {
+      aliyot = customParashaAliyot;
+      title = customParashaTitle || "Parasha";
+    } else {
+      const calendar = await fetchCalendar(isDiaspora);
+      const parsha = findParshaItem(calendar);
+
+      if (!parsha?.extraDetails?.aliyot?.length) {
+        throw new Error("No weekly Torah portion found for today.");
+      }
+
+      aliyot = parsha.extraDetails.aliyot;
+      title = parsha.displayValue.en;
     }
 
-    const aliyot = parsha.extraDetails.aliyot;
     currentAliyotCount = aliyot.length;
 
-    const aliyahNumber = getActiveAliyahNumber();
-    const aliyahIndex = Math.min(aliyahNumber - 1, aliyot.length - 1);
+    const aliyahNumber = Math.min(
+      Math.max(1, getActiveAliyahNumber()),
+      aliyot.length
+    );
+    const aliyahIndex = aliyahNumber - 1;
     const aliyahRef = aliyot[aliyahIndex];
     const textData = await fetchAliyahText(aliyahRef);
     let verses = normalizeVerses(textData, aliyahRef);
@@ -409,8 +479,10 @@ async function loadReadingInner() {
 
     if (loadId !== readingLoadGeneration) return;
 
-    const title = parsha.displayValue.en;
     currentTitle = title;
+    currentParshaTitle = title || "";
+    currentAliyahRef = aliyahRef || "";
+    currentAliyahNumber = aliyahNumber;
     fullVerses = verses;
     updateAliyahInfo(formatAliyahDisplay(aliyahRef));
     const playEntrance = !isHomeOpen();
@@ -475,12 +547,14 @@ async function handleAuthChange(session) {
       await loadUserProfile();
       await mergeSettingsOnLogin();
       await loadWordBank();
+      await loadReadingMap();
     } catch {
       /* keep local settings on sync failure */
     }
   } else {
     clearCloudSettings();
     clearWordBank();
+    clearReadingMapCache();
     clearProfileCache();
   }
 
@@ -502,7 +576,11 @@ async function bootstrap() {
   await initAuth();
 
   initAuthPanel({
-    onOpenWordBank: () => showWordBankPanel()
+    onOpenWordBank: () => showWordBankPanel(),
+    onOpenReadingMap: () => showReadingMapOverlay()
+  });
+  initReadingMapOverlay({
+    onOpenAliyah: (opts) => openAliyahFromProgress(opts)
   });
   initPracticeStoryOverlay({
     loadStory: async () => {
@@ -553,7 +631,14 @@ async function bootstrap() {
     openWeeklyFlash: () => openWeeklyFlashOverlay(),
     openPlacement: () => openPlacementOverlay(),
     openWordBank: () => showWordBankPanel(),
-    isReadingReady: () => readingReady
+    openReadingMap: () => showReadingMapOverlay(),
+    isReadingReady: () => readingReady,
+    onShowHome: () => {
+      const hadCustom = Boolean(customParashaAliyot);
+      clearCustomParasha();
+      sessionAliyahOverride = null;
+      if (hadCustom) void loadReading();
+    }
   });
   initWalkthroughOverlay({
     ensureReading: async () => {
@@ -615,6 +700,7 @@ async function bootstrap() {
     if (event === "SIGNED_OUT") {
       hideDailyVocabOverlay();
       hidePracticeStoryOverlay();
+      hideReadingMapOverlay();
     }
     handleAuthChange(session);
   });
@@ -624,6 +710,7 @@ async function bootstrap() {
       await loadUserProfile();
       await mergeSettingsOnLogin();
       await loadWordBank();
+      await loadReadingMap();
     } catch {
       /* guest fallback */
     }

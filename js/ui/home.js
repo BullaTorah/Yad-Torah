@@ -38,6 +38,7 @@ function els() {
     profileName: document.getElementById("homeProfileName"),
     authMenu: document.getElementById("homeAuthMenu"),
     wordBankBtn: document.getElementById("homeWordBankBtn"),
+    progressMenuBtn: document.getElementById("homeProgressBtn"),
     clearKnownBtn: document.getElementById("homeClearKnownBtn"),
     signOutBtn: document.getElementById("homeSignOutBtn"),
     walkthroughBtn: document.getElementById("homeWalkthroughBtn"),
@@ -49,6 +50,7 @@ function els() {
     threeBtn: document.getElementById("homeThreeBtn"),
     todayBtn: document.getElementById("homeTodayBtn"),
     practiceBtn: document.getElementById("homePracticeBtn"),
+    summaryBtn: document.getElementById("homeSummaryBtn"),
     storyBtn: document.getElementById("homeStoryBtn"),
     weeklyFlashBtn: document.getElementById("homeWeeklyFlashBtn"),
     loadingHint: document.getElementById("homeLoadingHint")
@@ -115,6 +117,7 @@ export function showHomeOverlay() {
     overlay.hidden = false;
     overlay.classList.remove("is-dismissing");
   }
+  api?.onShowHome?.();
   refreshHomeChrome();
   if (api?.isReadingReady?.()) {
     setHomeReadingReady(true);
@@ -122,12 +125,22 @@ export function showHomeOverlay() {
 }
 
 function setCtasEnabled(enabled) {
-  const { threeBtn, todayBtn, practiceBtn, storyBtn, weeklyFlashBtn } = els();
+  const {
+    threeBtn,
+    todayBtn,
+    practiceBtn,
+    summaryBtn,
+    storyBtn,
+    weeklyFlashBtn
+  } = els();
   [threeBtn, todayBtn].forEach((btn) => {
     if (btn && !btn.hidden) btn.disabled = !enabled;
   });
   if (practiceBtn && !practiceBtn.hidden) {
     practiceBtn.disabled = !enabled && revealing;
+  }
+  if (summaryBtn && !summaryBtn.hidden) {
+    summaryBtn.disabled = !enabled && revealing;
   }
   if (storyBtn && !storyBtn.hidden) {
     storyBtn.disabled = !enabled && revealing;
@@ -328,6 +341,7 @@ async function refreshHomeChrome() {
     progressFill,
     progressMarkers,
     practiceBtn,
+    summaryBtn,
     storyBtn,
     weeklyFlashBtn
   } = els();
@@ -354,6 +368,7 @@ async function refreshHomeChrome() {
 
   // Practice tools stay visible; click handlers gate on login / word bank
   if (practiceBtn) practiceBtn.hidden = false;
+  if (summaryBtn) summaryBtn.hidden = false;
   // Practice story — hidden for now (feature kept for soon)
   if (storyBtn) storyBtn.hidden = true;
   if (weeklyFlashBtn) {
@@ -405,7 +420,8 @@ async function refreshHomeChrome() {
       metaEl: progressMeta,
       fillEl: progressFill,
       markersEl: progressMarkers,
-      learned
+      learned,
+      showLabels: false
     });
   }
 
@@ -478,12 +494,14 @@ export function initHomeOverlay(handlers) {
     profileBtn,
     authMenu,
     wordBankBtn,
+    progressMenuBtn,
     clearKnownBtn,
     signOutBtn,
     walkthroughBtn,
     threeBtn,
     todayBtn,
     practiceBtn,
+    summaryBtn,
     storyBtn,
     weeklyFlashBtn
   } = els();
@@ -514,6 +532,10 @@ export function initHomeOverlay(handlers) {
       return;
     }
     closeHomeAuthMenu();
+  });
+  progressMenuBtn?.addEventListener("click", () => {
+    closeHomeAuthMenu();
+    api?.openReadingMap?.();
   });
   wordBankBtn?.addEventListener("click", () => {
     closeHomeAuthMenu();
@@ -551,6 +573,13 @@ export function initHomeOverlay(handlers) {
   todayBtn?.addEventListener("click", () => reveal("aliyah"));
   practiceBtn?.addEventListener("click", () => {
     api?.openPractice?.();
+  });
+  summaryBtn?.addEventListener("click", () => {
+    if (!isLoggedIn()) {
+      openAuthPanel();
+      return;
+    }
+    api?.openReadingMap?.();
   });
   storyBtn?.addEventListener("click", () => {
     api?.openPracticeStory?.();
