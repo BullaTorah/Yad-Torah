@@ -1,7 +1,6 @@
 import { isLoggedIn, signOut, getUser } from "../core/auth.js";
 import {
   countLearnedWords,
-  clearLearnedWords,
   onLearnedWordsChange,
   onWordBankChange
 } from "../core/word-bank.js";
@@ -39,7 +38,6 @@ function els() {
     authMenu: document.getElementById("homeAuthMenu"),
     wordBankBtn: document.getElementById("homeWordBankBtn"),
     progressMenuBtn: document.getElementById("homeProgressBtn"),
-    clearKnownBtn: document.getElementById("homeClearKnownBtn"),
     signOutBtn: document.getElementById("homeSignOutBtn"),
     walkthroughBtn: document.getElementById("homeWalkthroughBtn"),
     streak: document.getElementById("homeStreak"),
@@ -495,7 +493,6 @@ export function initHomeOverlay(handlers) {
     authMenu,
     wordBankBtn,
     progressMenuBtn,
-    clearKnownBtn,
     signOutBtn,
     walkthroughBtn,
     threeBtn,
@@ -540,22 +537,6 @@ export function initHomeOverlay(handlers) {
   wordBankBtn?.addEventListener("click", () => {
     closeHomeAuthMenu();
     api?.openWordBank?.();
-  });
-  clearKnownBtn?.addEventListener("click", async () => {
-    closeHomeAuthMenu();
-    if (!isLoggedIn()) return;
-    const ok = window.confirm(
-      "Clear all Known words for your account? Your Practice words are left alone."
-    );
-    if (!ok) return;
-    try {
-      clearKnownBtn.disabled = true;
-      await clearLearnedWords();
-    } catch (err) {
-      window.alert(err?.message || "Could not clear known words.");
-    } finally {
-      clearKnownBtn.disabled = false;
-    }
   });
   signOutBtn?.addEventListener("click", async () => {
     closeHomeAuthMenu();
